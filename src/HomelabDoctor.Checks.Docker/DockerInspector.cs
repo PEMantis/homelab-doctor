@@ -15,19 +15,13 @@ public sealed class DockerInspector : IDockerInspector
 
     public async Task<DockerAvailability> GetAvailabilityAsync(CancellationToken ct = default)
     {
-        CommandOutput output;
-        try
-        {
-            output = await _runner.RunAsync("docker", "info --format json", ct);
-        }
-        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or FileNotFoundException)
-        {
-            return new DockerAvailability { Status = DockerAvailabilityStatus.NotInstalled, Message = "docker executable not found" };
-        }
+        var output = await _runner.RunAsync("docker", "info --format json", ct);
 
         if (output.ExitCode != 0)
         {
             var combined = (output.Stderr + " " + output.Stdout).ToLower();
+            if (combined.Contains("executable not found") || combined.Contains("not found: docker"))
+                return new DockerAvailability { Status = DockerAvailabilityStatus.NotInstalled, Message = "docker executable not found" };
             if (combined.Contains("permission denied") || combined.Contains("access denied"))
                 return new DockerAvailability
                 {

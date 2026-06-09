@@ -1,7 +1,5 @@
 using System.CommandLine;
-using HomelabDoctor.Checks.Docker;
 using HomelabDoctor.Core.Models;
-using HomelabDoctor.Core.Runner;
 using HomelabDoctor.Reporting;
 using Spectre.Console;
 
@@ -31,19 +29,9 @@ public static class ReportCommand
             var format = parseResult.GetValue(formatOption) ?? "markdown";
             var output = parseResult.GetValue(outputOption);
 
-            var runner = new CommandRunner();
-            var inspector = new DockerInspector(runner);
-            var check = new DockerCheck(inspector);
-
-            CheckResult result = null!;
-            await AnsiConsole.Status()
-                .StartAsync("Running checks...", async ctx =>
-                {
-                    ctx.Spinner(Spinner.Known.Dots);
-                    result = await check.RunAsync(ct);
-                });
-
-            IReadOnlyList<CheckResult> results = [result];
+            var docker = await CheckCommand.RunDockerCheck(ct);
+            var dns = await CheckCommand.RunDnsCheck(ct);
+            IReadOnlyList<CheckResult> results = [docker, dns];
 
             if (format == "console")
             {

@@ -18,7 +18,14 @@ public sealed class CommandRunner : ICommandRunner
             CreateNoWindow = true
         };
 
-        process.Start();
+        try
+        {
+            process.Start();
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or FileNotFoundException)
+        {
+            return new CommandOutput(-1, string.Empty, $"executable not found: {executable}");
+        }
 
         var stdoutTask = process.StandardOutput.ReadToEndAsync(ct);
         var stderrTask = process.StandardError.ReadToEndAsync(ct);
