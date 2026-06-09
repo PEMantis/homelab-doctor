@@ -1,0 +1,32 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.DotSettings
+launchSettings.json
+
+## NuGet
+*.nupkg
+.nuget/
+
+## Build artifacts
+publish/
+artifacts/
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Rider / JetBrains
+.idea/
+*.sln.iml
+
+## VS Code
+.vscode/
+!.vscode/extensions.json
+
+## Reports
+homelab-report-*.md

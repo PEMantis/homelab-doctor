@@ -1,0 +1,27 @@
+# homelab-doctor.yml — example configuration (v0.2+)
+#
+# This file is not used in v0.1. It documents the intended config format
+# for future DNS and multi-host check support.
+
+# Optional: expected DNS records for the dns check (v0.2)
+# dns:
+#   records:
+#     - hostname: grafana.home.arpa
+#       type: A
+#       expected: 192.168.1.50
+#     - hostname: traefik.home.arpa
+#       type: A
+#       expected: 192.168.1.50
+
+# Optional: SSH inventory for fleet checks (v0.4)
+# hosts:
+#   - alias: nas
+#     host: 192.168.1.20
+#     user: admin
+#     checks:
+#       - docker
+#   - alias: pihole
+#     host: 192.168.1.5
+#     user: pi
+#     checks:
+#       - dns

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HomelabDoctor.Checks.Docker/HomelabDoctor.Checks.Docker.csproj" />
+    <Project Path="src/HomelabDoctor.Cli/HomelabDoctor.Cli.csproj" />
+    <Project Path="src/HomelabDoctor.Core/HomelabDoctor.Core.csproj" />
+    <Project Path="src/HomelabDoctor.Reporting/HomelabDoctor.Reporting.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HomelabDoctor.Checks.Docker.Tests/HomelabDoctor.Checks.Docker.Tests.csproj" />
+    <Project Path="tests/HomelabDoctor.Core.Tests/HomelabDoctor.Core.Tests.csproj" />
+  </Folder>
+</Solution>
