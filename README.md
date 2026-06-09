@@ -36,14 +36,14 @@ The question it answers is: **"What is obviously wrong with this machine right n
 ```bash
 git clone https://github.com/PEMantis/homelab-doctor
 cd homelab-doctor
-dotnet run --project src/HomelabDoctor.Cli -- check docker
+dotnet run --project src/HomelabDoctor.Cli -- check
 ```
 
 ### Or build a self-contained binary
 
 ```bash
 dotnet publish src/HomelabDoctor.Cli -c Release -r linux-x64 --self-contained -o ./publish
-./publish/homelab-doctor check docker
+./publish/homelab-doctor check
 ```
 
 ---
@@ -51,11 +51,27 @@ dotnet publish src/HomelabDoctor.Cli -c Release -r linux-x64 --self-contained -o
 ## Usage
 
 ```
-homelab-doctor check              # Run all checks (currently: Docker)
-homelab-doctor check docker       # Inspect Docker environment
+homelab-doctor check              # Run all checks (Docker + DNS)
+homelab-doctor check docker       # Inspect Docker environment only
+homelab-doctor check dns          # Inspect DNS configuration only
 homelab-doctor report             # Generate a Markdown report to stdout
 homelab-doctor report --output report.md   # Write report to file
 homelab-doctor report --format console     # Render in terminal instead
+```
+
+### Optional config file
+
+Place a `homelab-doctor.yml` in your working directory to add expected DNS record validation:
+
+```yaml
+dns:
+  records:
+    - hostname: grafana.home.arpa
+      type: A
+      expected: 192.168.1.50
+    - hostname: traefik.home.arpa
+      type: A
+      expected: 192.168.1.50
 ```
 
 ---
@@ -64,13 +80,15 @@ homelab-doctor report --format console     # Render in terminal instead
 
 ```
 Homelab Doctor
-Docker Diagnosis
 
-✓  Docker daemon is reachable
-✓  14 containers found
-⚠  3 containers have no healthcheck
-✗  1 container is restarting
-⚠  2 containers expose ports on 0.0.0.0
+✓ Docker Check
+  Docker looks healthy. 14 containers found, no issues detected.
+
+  ✓  Docker daemon is reachable
+  ✓  14 containers found
+  ⚠  3 containers have no healthcheck
+  ✗  1 container is restarting
+  ⚠  2 containers expose ports on 0.0.0.0
 
 Findings
 
@@ -83,25 +101,27 @@ Findings
     $ docker logs --tail=100 aeris-api
     $ docker inspect aeris-api
 
-[WARNING] 3 running containers have no healthcheck
-  Evidence:        traefik, redis, postgres
-  Why it matters:  Docker will show these as 'running' even if the service
-                   inside has silently crashed.
-  Fix:             Add a HEALTHCHECK to the Dockerfile or compose file.
+✓ DNS Check
+  DNS looks healthy. Local resolution is working.
+
+  ✓  DNS server(s) configured: 192.168.1.1
+  ✓  github.com resolves via local DNS
+  ✓  cloudflare.com resolves via local DNS
 ```
 
 ---
 
-## MVP Scope (v0.1)
-
-The current release covers:
+## What's in v0.2
 
 - [x] Docker daemon reachability
 - [x] Running / stopped / restarting / unhealthy container counts
 - [x] Containers missing healthchecks
 - [x] Containers exposing ports on 0.0.0.0
 - [x] Restart counts with warnings for high counts
-- [x] Clear findings: severity, evidence, explanation, suggested commands
+- [x] DNS nameserver discovery from `/etc/resolv.conf`
+- [x] Local resolution checks for public hostnames
+- [x] Public DNS comparison via `dig` — sinkhole and split-horizon detection
+- [x] Config-driven expected DNS record validation (`homelab-doctor.yml`)
 - [x] Spectre.Console terminal output
 - [x] Markdown report generation (`homelab-doctor report`)
 
@@ -109,14 +129,15 @@ The current release covers:
 
 ## Roadmap
 
-### v0.1 — The Stethoscope _(current)_
+### v0.1 — The Stethoscope ✓
 - Docker environment inspection
 - Markdown report output
 
-### v0.2 — DNS Goblin Finder
-- Expected DNS record checks
-- Local vs public DNS comparison
-- Hostname resolution validation
+### v0.2 — DNS Goblin Finder ✓
+- DNS nameserver discovery
+- Local resolution validation
+- Public DNS comparison (sinkhole / split-horizon detection)
+- Config-driven expected record checks
 
 ### v0.3 — Reverse Proxy Rounds
 - Traefik router/service/middleware inspection
@@ -145,7 +166,7 @@ Homelab Doctor collects nothing. It:
 - Has no authentication surface
 - Has no background daemon or scheduled tasks
 
-Everything runs locally. The only network activity is the tool reading from your local Docker socket.
+Everything runs locally. DNS checks resolve hostnames using your machine's configured resolver and optionally shell to `dig` — no data leaves your network.
 
 ---
 
@@ -155,7 +176,7 @@ Contributions are welcome. This project is early-stage, so the best way to help 
 
 1. Open an issue describing a new check you'd like to see
 2. Open an issue for a finding you think is noisy, missing, or misleading
-3. Submit a PR with a new check module following the existing `ICheck` / `IDockerInspector` pattern
+3. Submit a PR with a new check module following the existing `ICheck` / `IDnsInspector` / `IDockerInspector` pattern
 
 Please keep checks:
 - **Local-first**: no cloud calls
