@@ -31,7 +31,8 @@ public static class ReportCommand
 
             var docker = await CheckCommand.RunDockerCheck(ct);
             var dns = await CheckCommand.RunDnsCheck(ct);
-            IReadOnlyList<CheckResult> results = [docker, dns];
+            var traefik = await CheckCommand.RunTraefikCheck(ct);
+            IReadOnlyList<CheckResult> results = [docker, dns, traefik];
 
             if (format == "console")
             {

@@ -16,6 +16,8 @@
     <ProjectReference Include="..\HomelabDoctor.Core\HomelabDoctor.Core.csproj" />
     <ProjectReference Include="..\HomelabDoctor.Checks.Docker\HomelabDoctor.Checks.Docker.csproj" />
     <ProjectReference Include="..\HomelabDoctor.Reporting\HomelabDoctor.Reporting.csproj" />
+    <ProjectReference Include="..\HomelabDoctor.Checks.Traefik\HomelabDoctor.Checks.Traefik.csproj" />
+    <ProjectReference Include="..\HomelabDoctor.Checks.Dns\HomelabDoctor.Checks.Dns.csproj" />
   </ItemGroup>
 
 </Project>
